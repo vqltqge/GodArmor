@@ -1,0 +1,14 @@
+name: GodArmor
+version: '${version}'
+
+main: me.vqlt.godarmor.GodArmor
+api-version: '1.21.8'
+load: POSTWORLD
+
+commands:
+  godarmor:
+    description: Gives God Armor
+    usage: /godarmor
+  dash:
+    description: Lets you dash if you have the full set
+    usage: /dash
