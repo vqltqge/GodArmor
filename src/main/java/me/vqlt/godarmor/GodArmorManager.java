@@ -104,9 +104,7 @@ public class GodArmorManager {
         leggingsMeta.displayName(Component.text("God Leggings").color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false));
         // Add lore
         leggingsMeta.lore(
-                List.of(
-                        Component.text(
-                                "Moves faster than mortal eyes can follow.",
+                List.of(Component.text("Moves faster than mortal eyes can follow.",
                                 NamedTextColor.GRAY
                         ),
                         Component.empty(),

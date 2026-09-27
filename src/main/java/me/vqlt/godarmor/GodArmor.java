@@ -12,9 +12,13 @@ public final class GodArmor extends JavaPlugin {
         saveDefaultConfig();
 
         GodArmorManager godArmorManager = new GodArmorManager(this);
+        DashCommand dashCommand = new DashCommand(this, godArmorManager);
+
+        ActionBarManager actionBarManager = new ActionBarManager(godArmorManager, dashCommand, this);
+        actionBarManager.start();
 
         getCommand("godarmor").setExecutor(new GodArmorCommand(godArmorManager));
-        getCommand("dash").setExecutor(new DashCommand(this, godArmorManager));
+        getCommand("dash").setExecutor(dashCommand);
 
         getServer().getPluginManager().registerEvents(new GodArmorGUIListener(), this);
 
