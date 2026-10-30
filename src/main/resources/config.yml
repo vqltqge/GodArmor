@@ -1,3 +1,8 @@
+# If the players that hold god armor pieces should glow or have a special colour on the tablist
+
+tablist-color: true
+glow: true
+
 dash:
   strength: 3.0
   cooldown-seconds: 5

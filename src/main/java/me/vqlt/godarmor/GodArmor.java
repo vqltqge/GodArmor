@@ -21,6 +21,7 @@ public final class GodArmor extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 godArmorManager.updateArmorEffects(player);
+                godArmorManager.updateTablist(player);
             }
         }, 0L, 20L);
     }

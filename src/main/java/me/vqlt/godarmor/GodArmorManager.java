@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -19,6 +20,7 @@ public class GodArmorManager {
     // Field - store the dependency
     private final GodArmor plugin;
     private final NamespacedKey armorKey;
+
 
     // Constructor - receive the dependency
     public GodArmorManager(GodArmor plugin) {
@@ -254,10 +256,40 @@ public class GodArmorManager {
             player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 40, 0));
             player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 40, 0));
         }
-
-
     }
 
+    public void updateTablist(Player player) {
+
+        Inventory inventory = player.getInventory();
+
+        boolean hasGodArmor = false;
+
+        // Check whether the player has any God Armour
+        for (ItemStack item : inventory) {
+            if (isGodArmor(item)) {
+                hasGodArmor = true;
+                break;
+            }
+        }
+
+        // Update tablist colour
+        if (plugin.getConfig().getBoolean("tablist-color", true)) {
+            if (hasGodArmor) {
+                player.playerListName(Component.text(player.getName(), NamedTextColor.GOLD));
+            } else {
+                player.playerListName(Component.text(player.getName()));
+            }
+        }
+
+        // Update glowing effect
+        if (plugin.getConfig().getBoolean("glowing", true)) {
+            if (hasGodArmor) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 40, 0));
+            } else {
+                player.removePotionEffect(PotionEffectType.GLOWING);
+            }
+        }
+    }
 
     public boolean dash(Player player) {
 
