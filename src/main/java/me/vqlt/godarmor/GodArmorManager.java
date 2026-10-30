@@ -3,6 +3,7 @@ package me.vqlt.godarmor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -13,6 +14,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.List;
 
@@ -275,7 +278,7 @@ public class GodArmorManager {
             if (hasGodArmor) {
                 player.playerListName(Component.text(player.getName(), NamedTextColor.GOLD));
             } else {
-                player.playerListName(Component.text(player.getName()));
+                player.playerListName(Component.text(player.getName(), NamedTextColor.WHITE));
             }
         }
 
@@ -322,5 +325,31 @@ public class GodArmorManager {
                 || isGodChestplate(item)
                 || isGodLeggings(item)
                 || isGodBoots(item);
+    }
+
+    public void updateNametag(Player player) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
+        Team team = scoreboard.getTeam("godarmor");
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam("godarmor");
+            team.color(NamedTextColor.GOLD);
+        }
+
+        boolean hasGodArmor = false;
+
+        for (ItemStack item : player.getInventory()) {
+            if (isGodArmor(item)) {
+                hasGodArmor = true;
+                break;
+            }
+        }
+
+        if (hasGodArmor) {
+            team.addEntry(player.getName());
+        } else {
+            team.removeEntry(player.getName());
+        }
     }
 }

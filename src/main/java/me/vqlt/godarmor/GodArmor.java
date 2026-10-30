@@ -26,6 +26,7 @@ public final class GodArmor extends JavaPlugin {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 godArmorManager.updateArmorEffects(player);
                 godArmorManager.updateTablist(player);
+                godArmorManager.updateNametag(player);
             }
         }, 0L, 20L);
     }
