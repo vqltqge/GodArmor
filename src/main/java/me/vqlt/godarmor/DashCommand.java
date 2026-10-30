@@ -1,5 +1,7 @@
 package me.vqlt.godarmor;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,8 @@ public class DashCommand implements CommandExecutor {
     private final GodArmor plugin;
     private final GodArmorManager godArmorManager;
 
+    private static final TextColor DASH_COLOR = TextColor.fromHexString("#FFD700");
+
     private final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
     public DashCommand(
@@ -24,13 +28,36 @@ public class DashCommand implements CommandExecutor {
         this.godArmorManager = godArmorManager;
     }
 
-    private long getDashCooldownMillis() {
+    public long getDashCooldownMillis() {
         long cooldownSeconds = plugin.getConfig().getLong(
                 "dash.cooldown-seconds",
                 5
         );
 
         return cooldownSeconds * 1000L;
+    }
+
+    public boolean isOnCooldown(UUID id) {
+        return getRemainingMillis(id) > 0;
+    }
+
+    public long getRemainingMillis(UUID id) {
+        Long lastUsed = cooldowns.get(id);
+
+        if (lastUsed == null) {
+            return 0;
+        }
+
+        long cooldownMillis = getDashCooldownMillis();
+        long timePassed = System.currentTimeMillis() - lastUsed;
+        long remaining = cooldownMillis - timePassed;
+
+        if (remaining <= 0) {
+            cooldowns.remove(id);
+            return 0;
+        }
+
+        return remaining;
     }
 
     @Override
@@ -46,41 +73,23 @@ public class DashCommand implements CommandExecutor {
         }
 
         UUID playerId = player.getUniqueId();
-        long currentTime = System.currentTimeMillis();
-        long cooldownMillis = getDashCooldownMillis();
 
-        if (cooldowns.containsKey(playerId)) {
-            long lastUsed = cooldowns.get(playerId);
-            long timePassed = currentTime - lastUsed;
+        if (isOnCooldown(playerId)) {
+            double remainingSeconds = getRemainingMillis(playerId) / 1000.0;
 
-            if (timePassed < cooldownMillis) {
-                double remainingTime =
-                        (cooldownMillis - timePassed) / 1000.0;
+            player.sendMessage(Component.text("➤ Dash is on cooldown for " + String.format("%.1f", remainingSeconds) + "s").color(DASH_COLOR));
 
-                player.sendMessage(
-                        String.format(
-                                "Dash is on cooldown for %.1f more seconds.",
-                                remainingTime
-                        )
-                );
-
-                return true;
-            }
+            return true;
         }
 
         boolean dashed = godArmorManager.dash(player);
 
         if (!dashed) {
-            player.sendMessage(
-                    "You must wear the full God Armor Set to dash!"
-            );
+            player.sendMessage(Component.text("✦ You must wear the full God Armor Set to dash!").color(DASH_COLOR));
             return true;
         }
 
-        cooldowns.put(
-                playerId,
-                System.currentTimeMillis()
-        );
+        cooldowns.put(playerId, System.currentTimeMillis());
 
         return true;
     }
